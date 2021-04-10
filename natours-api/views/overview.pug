@@ -1,0 +1,47 @@
+extends base
+block content
+    mixin cardBox(tour)
+        div.card
+                    div.card__header
+                        div.card__picture
+                            div.card__picture-overlay &nbsp;
+                            img.card__picture-img(src=`/img/tours/tour-2-cover.jpg` alt=`${tour.name}`)
+                        
+                        h3.heading-tertirary
+                            span #{tour.name}
+                    
+                    div.card__details
+                        - const dd = `${tour.difficulty} ${tour.duration}-day tour`
+                        h4.card__sub-heading #{dd}
+                        p.card__text= tour.summary  
+                        div.card__data
+                            svg.card__icon
+                                use(xlink:href='/img/icons.svg#icon-map-pin')
+                            span= tour.startLocation.description
+                        div.card__data
+                            svg.card__icon
+                                use(xlink:href='/img/icons.svg#icon-calendar')
+                            span test
+                        div.card__data
+                            svg.card__icon
+                                use(xlink:href='/img/icons.svg#icon-flag')
+                            span #{tour.locations.length} stops
+                        div.card__data
+                            svg.card__icon
+                                use(xlink:href='/img/icons.svg#icon-user')
+                            span #{tour.maxGroupSize} people
+                        
+                    div.card__footer
+                        p
+                            span.card__footer-value $#{tour.price}
+                            | 
+                            span.card__footer-text per person
+                        p.card__ratings
+                            span.card__footer-value #{tour.ratingsAverage}
+                            | 
+                            span.card__footer-text rating (#{tour.ratingsQuantity})
+                        a.btn.btn--green.btn--small(href=`/tour/${tour.slug}`) Details
+    main.main
+        div.card-container
+            each tour in tours
+                +cardBox(tour)

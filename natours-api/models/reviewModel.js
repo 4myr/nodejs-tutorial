@@ -11,11 +11,22 @@ const reviewSchema = mongoose.Schema({
         type: String,
         required: ["Comment is required!"]
     },
-    tour:{
+    user: {
         type: mongoose.Schema.ObjectId,
-        ref: "Tour"
+        ref: "User",
+        required: ["User is required!"]
+    },
+    tour: {
+        type: mongoose.Schema.ObjectId,
+        ref: "Tour",
+        required: ["User is required!"]
     }
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 });
+
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
 const review = mongoose.model('Review', reviewSchema);
 

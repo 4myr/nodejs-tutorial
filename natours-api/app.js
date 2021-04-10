@@ -12,9 +12,11 @@ const hpp = require('hpp');
 const tourRouter = require('./routes/tourRouter');
 const userRouter = require('./routes/userRouter');
 const reviewRouter = require('./routes/reviewRouter');
+const viewsRouter = require('./routes/viewsRouter');
 
 // Models
 const User = require('./models/userModel');
+const Tour = require('./models/tourModel');
 
 const app = express();
 
@@ -33,9 +35,19 @@ app.use(xss());
 app.use(mongoSanitize());
 app.use(hpp());
 
-app.use(express.json());
+
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, './public')));
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, "views"));
+
+// Index Route
+app.get('/', (req, res) => {
+    res.status(200).send('Index');
+});
+
+app.use(express.json());
 
 // RequestTime Middleware
 app.use( (req, res, next) => {
@@ -60,15 +72,11 @@ app.use( async (req, res, next) => {
 });
 
 
-// Index Route
-app.get('/', (req, res) => {
-    res.status(200).send('Index');
-});
-
 // Using Routers
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/', viewsRouter);
 
 // Not found pages
 app.all('*', (req, res, next) => {
