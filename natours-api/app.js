@@ -11,6 +11,7 @@ const hpp = require('hpp');
 // Routers
 const tourRouter = require('./routes/tourRouter');
 const userRouter = require('./routes/userRouter');
+const reviewRouter = require('./routes/reviewRouter');
 
 // Models
 const User = require('./models/userModel');
@@ -67,6 +68,7 @@ app.get('/', (req, res) => {
 // Using Routers
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 // Not found pages
 app.all('*', (req, res, next) => {

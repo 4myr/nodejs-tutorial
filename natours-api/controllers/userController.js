@@ -3,6 +3,7 @@ const APIFeatures = require('../utils/apiFeatures');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+const factory = require('./handlerFactory');
 
 const SendEmail = async () => {
     const transporter = nodemailer.createTransport({
@@ -21,22 +22,7 @@ const SendEmail = async () => {
     });
 };
 
-exports.getAllUsers = async (req, res) => {
-    try {
-        const features = new APIFeatures(User.find(), req.query).filter();
-        const doc = await features.query;
-        res.json({
-            status: 'success',
-            data: doc
-        });
-    } catch (err) {
-        res.status(500).json({
-            status: 'fail',
-            request_time: req.requestTime,
-            error: err
-        });
-    }
-}
+exports.getAllUsers = factory.getAll(User);
 exports.createUser = async (req, res) => {
     try {
         const doc = await User.create(req.body);
@@ -58,37 +44,9 @@ exports.createUser = async (req, res) => {
         });
     }
 }
-exports.updateUser = async (req, res) => {
-    try {
-        const doc = await User.findByIdAndUpdate(req.params.id, req.body, {
-            new: true
-        });
-        res.json({
-            status: 'success',
-            data: doc
-        });
-    } catch (err) {
-        res.status(500).json({
-            status: 'fail',
-            request_time: req.requestTime,
-            error: err
-        });
-    }
-}
-exports.deleteUser = async (req, res) => {
-    try {
-        const doc = await User.findByIdAndDelete(req.params.id);
-        res.json({
-            status: 'success'
-        });
-    } catch (err) {
-        res.status(500).json({
-            status: 'fail',
-            request_time: req.requestTime,
-            error: err
-        });
-    }
-}
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);
+
 exports.getMe = async (req, res) => {
     await SendEmail();
     res.json({
