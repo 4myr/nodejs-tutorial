@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const factory = require('./handlerFactory');
+const upload = require('../utils/upload');
+const sharp = require('sharp');
 
 const SendEmail = async () => {
     const transporter = nodemailer.createTransport({
@@ -21,11 +23,20 @@ const SendEmail = async () => {
         text: "Welcome to Natours API!"
     });
 };
-
+exports.uploadUserPhoto = upload.single('photo');
+exports.resizeUserPhoto = async (req, res, next) => {
+    if (!req.file) return next();
+    req.file.filename = `user-${req.params.id}-${Date.now()}.jpeg`;
+    await sharp(req.file.buffer).toFormat('jpeg').
+    jpeg().toFile(`public/img/users/${req.file.filename}`);
+    next();
+}
 exports.getAllUsers = factory.getAll(User);
 exports.createUser = async (req, res) => {
     try {
-        const doc = await User.create(req.body);
+        let data = req.body;
+        data.photo = req.file.filename;
+        const doc = await User.create(data);
         const token = jwt.sign({
             id: doc._id
         }, process.env.JWT_SECRET, {
@@ -78,12 +89,13 @@ exports.loginUser = async (req, res) => {
                     status: 'success',
                     token: token
                 });
+            } else {
+                res.status(400).json({
+                    status: 'fail',
+                    request_time: req.requestTime,
+                    error: "User or password wrong!"
+                });
             }
-            res.status(400).json({
-                status: 'fail',
-                request_time: req.requestTime,
-                error: "User or password wrong!"
-            });
         })
     } catch (err) {
         console.log(err);

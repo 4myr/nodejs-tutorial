@@ -7,6 +7,8 @@ const helmet = require('helmet');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
+const multer = require('multer');
 
 // Routers
 const tourRouter = require('./routes/tourRouter');
@@ -16,7 +18,7 @@ const viewsRouter = require('./routes/viewsRouter');
 
 // Models
 const User = require('./models/userModel');
-const Tour = require('./models/tourModel');
+const upload = require('./utils/upload');
 
 const app = express();
 
@@ -35,19 +37,16 @@ app.use(xss());
 app.use(mongoSanitize());
 app.use(hpp());
 
-
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, './public')));
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, "views"));
 
-// Index Route
-app.get('/', (req, res) => {
-    res.status(200).send('Index');
-});
-
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+// app.use(upload.array());
+app.use(cookieParser());
 
 // RequestTime Middleware
 app.use( (req, res, next) => {
@@ -58,7 +57,8 @@ app.use( (req, res, next) => {
 // Get user
 app.use( async (req, res, next) => {
     
-    const token = req.headers['authorization'] ? req.headers['authorization'].split(' ')[1] : undefined;
+    let token = req.headers['authorization'] ? req.headers['authorization'].split(' ')[1] : undefined;
+    token = token == undefined ? req.cookies.jwt : token
     req.user = undefined;
     if (token) {
         await jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {

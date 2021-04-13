@@ -8,8 +8,8 @@ header.header
         if user
             a.nav__el.nav__el--logout Log out
             a.nav__el(href='/me')
-                img.nav__user-img(src=`/img/users/${user.photo}` alt=`Photo of ${user.name}`)
-                span #{user.name.split(' ')[0]}
+                img.nav__user-img(src=`/img/users/${user.photo}` alt=`Photo of ${user.first_name}`)
+                span #{user.first_name}
         else 
             a.nav__el(href='/login') Log In
             a.nav__el.nav__el--cta(href='/signup') Sign Up

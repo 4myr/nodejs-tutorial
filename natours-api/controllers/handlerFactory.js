@@ -1,11 +1,12 @@
 
+const userModel = require('../models/userModel');
 const APIFeatures = require('../utils/apiFeatures');
 
 exports.getAll = Model => async (req, res, next) => {
     try {
         const features = new APIFeatures(Model.find(), req.query).filter();
         const docs = await features.query;
-        
+        upload.single('photo');
         res.json({
             status: 'success',
             request_time: req.requestTime,
@@ -40,6 +41,7 @@ exports.getOne = (Model, popOptions = null) => async (req, res, next) => {
 exports.createOne = Model => async (req, res, next) => {
     try {
         const doc = await Model.create(req.body);
+        upload.single('photo');
         res.json({
             status: 'success',
             request_time: req.requestTime,
@@ -56,7 +58,9 @@ exports.createOne = Model => async (req, res, next) => {
 }
 exports.updateOne = Model => async (req, res, next) => {
     try {
-        const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+        let data = req.body;
+        if (Model == userModel) data.photo = req.file.filename;
+        const doc = await Model.findByIdAndUpdate(req.params.id, data, {
             new: true,
             runValidator: true
         });
