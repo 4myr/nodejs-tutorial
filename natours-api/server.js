@@ -17,4 +17,18 @@ mongoose.connect(process.env.DATABASE, {
     console.log('Connection successful!');
 })
 
-app.listen(3000, () => console.log(`[${process.env.APP_NAME}] Listening port 3000...`));
+const server = app.listen(3000, () => console.log(`[${process.env.APP_NAME}] Listening port 3000...`));
+
+process.on('unhandledRejection', err => {
+    console.log("Unhandled Rejection, shutting down...");
+    console.log(err.name, err.message);
+    server.close( () => {
+        process.exit(1);
+    });
+});
+process.on('SIGTERM', () => {
+    console.log("Shutting down");
+    server.close(() => {
+        console.log('Process terminated!');
+    });
+});

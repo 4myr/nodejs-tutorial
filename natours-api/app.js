@@ -8,7 +8,7 @@ const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
-const multer = require('multer');
+const cors = require('cors');
 
 // Routers
 const tourRouter = require('./routes/tourRouter');
@@ -47,6 +47,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // app.use(upload.array());
 app.use(cookieParser());
+app.options('*', cors());
 
 // RequestTime Middleware
 app.use( (req, res, next) => {

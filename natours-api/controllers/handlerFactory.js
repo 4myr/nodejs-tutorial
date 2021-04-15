@@ -1,6 +1,7 @@
 
 const userModel = require('../models/userModel');
 const APIFeatures = require('../utils/apiFeatures');
+const AppError = require('../utils/appError');
 
 exports.getAll = Model => async (req, res, next) => {
     try {
@@ -13,10 +14,11 @@ exports.getAll = Model => async (req, res, next) => {
             data: docs
         });
     } catch (err) {
+        
         res.status(500).json({
             status: 'fail',
             request_time: req.requestTime,
-            error: err
+            error: new AppError(err, 500)
         });
     }
 }
