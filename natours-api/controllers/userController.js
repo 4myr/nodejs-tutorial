@@ -6,6 +6,7 @@ const nodemailer = require('nodemailer');
 const factory = require('./handlerFactory');
 const upload = require('../utils/upload');
 const sharp = require('sharp');
+const Email = require('../utils/email');
 
 const SendEmail = async () => {
     const transporter = nodemailer.createTransport({
@@ -35,7 +36,7 @@ exports.getAllUsers = factory.getAll(User);
 exports.createUser = async (req, res) => {
     try {
         let data = req.body;
-        data.photo = req.file.filename;
+        // data.photo = req.file.filename;
         const doc = await User.create(data);
         const token = jwt.sign({
             id: doc._id
@@ -48,6 +49,7 @@ exports.createUser = async (req, res) => {
             data: doc
         });
     } catch (err) {
+        console.log(err);
         res.status(500).json({
             status: 'fail',
             request_time: req.requestTime,
@@ -59,7 +61,7 @@ exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
 
 exports.getMe = async (req, res) => {
-    await SendEmail();
+    await (new Email(req.user, "https://google.com")).sendWelcome();
     res.json({
         status: 'success',
         data: req.user
